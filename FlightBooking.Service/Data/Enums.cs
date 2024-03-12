@@ -1,6 +1,11 @@
 ﻿namespace FlightBooking.Service.Data
 {
-    public class Enums
+    public enum Gender
     {
+        Female = 1,
+        Male,
+        Transgender,
+        Fluid,
+        PreferNotToSay
     }
 }

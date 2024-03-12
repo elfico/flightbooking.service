@@ -42,8 +42,6 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Data\Models\" />
     <Folder Include="Data\DTO\" />
     <Folder Include="Data\Repository\" />
     <Folder Include="Services\Interfaces\" />
