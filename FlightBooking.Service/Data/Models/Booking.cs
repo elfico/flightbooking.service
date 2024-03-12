@@ -10,18 +10,22 @@ namespace FlightBooking.Service.Data.Models
         public string LastName { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string FlightNumber { get; set; } = null!;
-        public string BookingNumber { get; set; } = null!;
-        public decimal Amount { get; set; }
-        public string Origin { get; set; } = null!;
-        public string Destination { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public DateOnly DateOfBirth { get; set; }
+        public Gender Gender { get; set; }
 
-        public int NumberOfAdults;
+        public string BookNumber { get; set; } = null!;
 
-        public int NumberOfChildren;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<FlightFares> FlightFares { get; set; } = new List<FlightFares>();
+        public virtual FlightInformation InitialFlight { get; set; } = null!;
+        public virtual FlightInformation? ReturnFlight { get; set; }
+
+        public virtual FlightFare InitialFlightFare { get; set; } = null!;
+        public virtual FlightFare? ReturnFlightFare { get; set; }
+
+        public virtual BookingOrder BookingOrder { get; set; } = null!;
+
     }
 }

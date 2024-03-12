@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Service.Controllers
 {
@@ -7,5 +6,14 @@ namespace FlightBooking.Service.Controllers
     [ApiController]
     public class SeatsController : ControllerBase
     {
+        public IActionResult GetAvailableSeats()
+        {
+            return Ok();
+        }
+
+        public IActionResult ReserveSeat()
+        {
+            return Ok();
+        }
     }
 }

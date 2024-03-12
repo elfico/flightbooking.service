@@ -2,7 +2,7 @@
 
 namespace FlightBooking.Service.Data.Models
 {
-    public class Flights
+    public class FlightInformation
     {
         [Key]
         public int Id { get; set; }
@@ -17,7 +17,8 @@ namespace FlightBooking.Service.Data.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<FlightFares> FlightFares { get; set; } = new List<FlightFares>();
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<FlightFare> FlightFares { get; set; } = new List<FlightFare>();
         public ICollection<ReservedSeat> ReservedSeats { get; set; } = new List<ReservedSeat>();
     }
 }

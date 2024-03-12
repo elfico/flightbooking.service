@@ -6,9 +6,9 @@ namespace FlightBooking.Service.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public string SeatId { get; set; } = null!;
-        public string BookingId { get; set; } = null!;
-        public string FlightId { get; set; } = null!;
+        public string SeatId { get; set; } = null!; // e.g 1A, 33B
+        public string BookingNumber { get; set; } = null!;
+        public string FlightNumber { get; set; } = null!;
         public bool IsReserved { get; set; }
 
         public DateTime CreatedAt { get; set; }

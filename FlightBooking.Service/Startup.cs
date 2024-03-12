@@ -1,6 +1,8 @@
 ﻿using FlightBooking.Service.Data.Configs;
+using FlightBooking.Service.Data.Models;
 using FlightBooking.Service.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
@@ -33,12 +35,12 @@ namespace FlightBooking.Service
 
             services.AddAutoMapper(typeof(Startup));
 
-            //services.AddDbContext<WellaHealthDbContext>(options =>
-            //{
-            //    //options.UseLoggerFactory(_myLoggerFactory).EnableSensitiveDataLogging(); //DEV: ENABLE TO SEE SQL Queries
+            services.AddDbContext<FlightBookingContext>(options =>
+            {
+                //options.UseLoggerFactory(_myLoggerFactory).EnableSensitiveDataLogging(); //DEV: ENABLE TO SEE SQL Queries
 
-            //    options.UseSqlServer(Configuration.GetConnectionString("WellaHealthDb"), b => b.MigrationsAssembly("WellaHealthApiCore"));
-            //});
+                options.UseSqlServer(Configuration.GetConnectionString("FlightBookingServiceDb"));
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -86,7 +88,7 @@ namespace FlightBooking.Service
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpContextAccessor httpContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0
             //The following Startup.Configure method adds middleware components for common app scenarios:
@@ -130,9 +132,6 @@ namespace FlightBooking.Service
                     opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Flight Booking API");
                 });
             }
-
-            //TODO: Configure api to throw 400 if the calling client is not doing so from https; using .UseHttpsRedirection is suitable for web apps not api
-            //https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-2.2&tabs=visual-studio
 
             app.UseAuthentication();
             app.UseAuthorization();

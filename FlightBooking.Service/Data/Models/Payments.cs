@@ -18,5 +18,7 @@ namespace FlightBooking.Service.Data.Models
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        public virtual BookingOrder BookingOrder { get; set; } = null!;
     }
 }
