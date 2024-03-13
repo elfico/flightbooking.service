@@ -10,7 +10,8 @@ namespace FlightBooking.Service.Data.Models
         public string FareCode { get; set; } = null!;
         public string FareName { get; set; } = null!;
         public decimal Price { get; set; }
-        public decimal Capacity { get; set; }
+        public int Capacity { get; set; }
+        public int Reserved { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -18,7 +19,5 @@ namespace FlightBooking.Service.Data.Models
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
         public virtual FlightInformation FlightInformation { get; set; } = null!;
-
-        //FK to Flights
     }
 }

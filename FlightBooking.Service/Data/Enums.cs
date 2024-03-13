@@ -31,4 +31,11 @@
         ASC = 1,
         DESC = 2
     }
+
+    public enum BookingStatus
+    {
+        Pending = 0,
+        Paid,
+        Confirmed
+    }
 }

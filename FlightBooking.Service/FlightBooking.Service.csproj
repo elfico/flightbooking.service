@@ -38,13 +38,9 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.3.1" />
+		<PackageReference Include="Stripe.net" Version="43.18.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\DTO\" />
-    <Folder Include="Services\Interfaces\" />
-  </ItemGroup>
 
 </Project>

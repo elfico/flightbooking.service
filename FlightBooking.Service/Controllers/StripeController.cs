@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlightBooking.Service.Data.Configs;
+using FlightBooking.Service.Data.DTO;
+using FlightBooking.Service.Services;
+using FlightBooking.Service.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Stripe;
 
 namespace FlightBooking.Service.Controllers
 {
@@ -6,18 +12,53 @@ namespace FlightBooking.Service.Controllers
     [ApiController]
     public class StripeController : ControllerBase
     {
-        public StripeController() { }
+        private readonly StripeConfig _stripeConfig;
+        private readonly IStripeService _stripeService;
+
+        public StripeController(IOptionsMonitor<StripeConfig> options, IStripeService stripeService)
+        {
+            _stripeConfig = options.CurrentValue;
+            _stripeService = stripeService;
+        }
 
         [HttpGet]
-        public IActionResult GeneratePaymentLink()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GeneratePaymentLink([FromBody] StripeDataDTO stripeDataDTO)
         {
-            return Ok();
+            ServiceResponse<string> result = _stripeService.GetStripeCheckoutUrl(stripeDataDTO);
+
+            return result.FormatResponse();
         }
 
         //webhook for stripe to verify payment
         [HttpPost]
         public async Task<IActionResult> NotificationWebhookAsync()
         {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+            string stripeSecretKey = _stripeConfig.SigningSecret;
+
+            Event stripeEvent;
+
+            try
+            {
+                stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], stripeSecretKey, throwOnApiVersionMismatch: false);
+            }
+            catch (StripeException)
+            {
+                return BadRequest();
+            }
+
+            //Sinc this is the only event we are handling.
+            if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+            {
+                var response = await _stripeService.ProcessPayment(stripeEvent);
+
+                return response.FormatResponse();
+            }
+
             return Ok();
         }
     }

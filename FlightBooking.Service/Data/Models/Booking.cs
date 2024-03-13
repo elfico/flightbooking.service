@@ -14,8 +14,9 @@ namespace FlightBooking.Service.Data.Models
         public DateOnly DateOfBirth { get; set; }
         public Gender Gender { get; set; }
 
-        public string BookNumber { get; set; } = null!;
+        public string BookingNumber { get; set; } = null!;
         public int BookingOrderId { get; set; }
+        public BookingStatus BookingStatus { get; set; } = BookingStatus.Pending;
 
         public int FlightId { get; set; }
         public int FlightFareId { get; set; }

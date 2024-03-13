@@ -9,7 +9,7 @@ namespace FlightBooking.Service.Data.Models
         public string OrderCode { get; set; } = null!;
         public string EmailAddress { get; set; } = null!;
         public decimal TotalAmount { get; set; }
-        public string OrderStatus { get; set; } = null!;
+        public BookingStatus OrderStatus { get; set; } = BookingStatus.Pending;
         public int NumberOfAdults { get; set; }
         public int NumberOfChildren { get; set; }
         public DateTime CreatedAt { get; set; }
