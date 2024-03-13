@@ -14,6 +14,7 @@ namespace FlightBooking.Service.Data.Models
         public DateTime ArrivalDate { get; set; }
         public string Airline { get; set; } = null!;
         public int SeatCapacity { get; set; }
+        public int SeatReserved { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

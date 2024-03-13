@@ -36,7 +36,7 @@ namespace FlightBooking.Service.Services
         {
             int result = await _fareRepository.Query()
                 .Where(x => x.Id == fareId)
-                .ExecuteUpdateAsync(x => x.SetProperty(y => y.Reserved, y => y.Reserved + 1));
+                .ExecuteUpdateAsync(x => x.SetProperty(y => y.SeatReserved, y => y.SeatReserved + 1));
 
             return new ServiceResponse<string>(string.Empty, (InternalCode)result);
         }

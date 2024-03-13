@@ -9,8 +9,13 @@ namespace FlightBooking.Service.Services
         public FlightBookingProfile()
         {
             CreateMap<FlightFare, FlightFareDTO>()
-                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.Capacity - src.Reserved))
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.SeatCapacity - src.SeatReserved))
                 .ForMember(dest => dest.FlightNumber, opt => opt.MapFrom(src => src.FlightInformation.FlightNumber));
+
+            CreateMap<ReservedSeat, ReservedSeatDTO>();
+
+            CreateMap<FlightInformation, FlightInformationDTO>()
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.SeatCapacity - src.SeatReserved));
         }
     }
 }

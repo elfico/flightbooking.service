@@ -10,8 +10,8 @@ namespace FlightBooking.Service.Data.Models
         public string FareCode { get; set; } = null!;
         public string FareName { get; set; } = null!;
         public decimal Price { get; set; }
-        public int Capacity { get; set; }
-        public int Reserved { get; set; }
+        public int SeatCapacity { get; set; }
+        public int SeatReserved { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

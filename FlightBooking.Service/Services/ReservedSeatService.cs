@@ -4,11 +4,12 @@ using FlightBooking.Service.Data;
 using FlightBooking.Service.Data.DTO;
 using FlightBooking.Service.Data.Models;
 using FlightBooking.Service.Data.Repository;
+using FlightBooking.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
-    public class ReservedSeatService
+    public class ReservedSeatService : IReservedSeatService
     {
         private readonly IGenericRepository<ReservedSeat> _seatRepo;
         private readonly IGenericRepository<Booking> _bookingRepo;
