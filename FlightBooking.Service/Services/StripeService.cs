@@ -39,13 +39,17 @@ namespace FlightBooking.Service.Services
                 return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam, "Invalid Data");
             }
 
-            StripeConfiguration.ApiKey = _stripeConfig.SecretKey;
+            string checkoutUrl = string.Empty;
 
-            var amountInCents = stripeDataDTO.Amount * 100;
-
-            var options = new SessionCreateOptions
+            try
             {
-                LineItems = new List<SessionLineItemOptions>
+                StripeConfiguration.ApiKey = _stripeConfig.SecretKey;
+
+                var amountInCents = stripeDataDTO.Amount * 100;
+
+                var options = new SessionCreateOptions
+                {
+                    LineItems = new List<SessionLineItemOptions>
                 {
                   new SessionLineItemOptions
                   {
@@ -62,16 +66,20 @@ namespace FlightBooking.Service.Services
                     Quantity = 1,
                   },
                 },
-                Mode = "payment",
-                SuccessUrl = stripeDataDTO.SuccessUrl,
-                CancelUrl = stripeDataDTO.CancelUrl,
-                ClientReferenceId = stripeDataDTO.PaymentReference,
-                CustomerEmail = stripeDataDTO.CustomerEmail,
-            };
-            var service = new SessionService();
-            Session session = service.Create(options);
-
-            string checkoutUrl = session.Url;
+                    Mode = "payment",
+                    SuccessUrl = stripeDataDTO.SuccessUrl,
+                    CancelUrl = stripeDataDTO.CancelUrl,
+                    ClientReferenceId = stripeDataDTO.PaymentReference,
+                    CustomerEmail = stripeDataDTO.CustomerEmail,
+                };
+                var service = new SessionService();
+                Session session = service.Create(options);
+                checkoutUrl = session.Url;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex.ToString());
+            }
 
             return new ServiceResponse<string>(checkoutUrl, InternalCode.Success);
         }
@@ -112,7 +120,7 @@ namespace FlightBooking.Service.Services
             //update flight and booking information
             var bookingOrder = await _orderRepo.Query()
                 .Include(x => x.Bookings)
-                .FirstOrDefaultAsync(x => x.OrderCode == orderCode);
+                .FirstOrDefaultAsync(x => x.OrderReference == orderCode);
 
             if (bookingOrder == null)
             {

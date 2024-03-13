@@ -43,8 +43,9 @@ namespace FlightBooking.Service.Data.DTO
         public Gender Gender { get; set; } = Gender.PreferNotToSay;
 
         [Required]
-        public string FlightFareCode { get; set; } = null!; //We are keeping Fare per booking to allow flexibility e.g Adult in Economy and Child in Business class
+        [Range(1, int.MaxValue)]
+        public int OutboundFlightFareId { get; set; } //We are keeping Fare per booking to allow flexibility e.g Adult in Economy and Child in Business class
 
-        public string? ReturnFlightFareCode { get; set; } = null!;
+        public int? ReturnFlightFareId { get; set; }
     }
 }
