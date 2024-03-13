@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FlightBooking.Service.Data.ModelConfigurations;
+using FlightBooking.Service.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace FlightBooking.Service.Data.Models
+namespace FlightBooking.Service.Data
 {
     public class FlightBookingContext : DbContext
     {
-        public FlightBookingContext(DbContextOptions<FlightBookingContext> options) : base(options) 
+        public FlightBookingContext(DbContextOptions<FlightBookingContext> options) : base(options)
         {
         }
 
@@ -12,7 +14,7 @@ namespace FlightBooking.Service.Data.Models
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<BookingOrder> BookingOrders { get; set; }
         public DbSet<ReservedSeat> ReservedSeats { get; set; }
-        public DbSet<Payments> Payments { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<FlightFare> FlightFares { get; set; }
         public DbSet<FlightInformation> FlightInformation { get; set; }
 
@@ -21,6 +23,13 @@ namespace FlightBooking.Service.Data.Models
             base.OnModelCreating(modelBuilder);
 
             //configure each model
+
+            modelBuilder.ApplyConfiguration(new FlightInformationConfiguration());
+            modelBuilder.ApplyConfiguration(new FlightFareConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingOrderConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new ReservedSeatConfiguration());
 
             ////Ensure all dates are saved as UTC and read as UTC:
             ////https://github.com/dotnet/efcore/issues/4711#issuecomment-481215673

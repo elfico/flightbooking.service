@@ -6,6 +6,7 @@ namespace FlightBooking.Service.Data.Models
     {
         [Key]
         public int Id { get; set; }
+        public int FlightInformationId { get; set; }
         public string FareCode { get; set; } = null!;
         public string FareName { get; set; } = null!;
         public decimal Price { get; set; }

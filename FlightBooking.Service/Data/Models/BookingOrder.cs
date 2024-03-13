@@ -16,6 +16,6 @@ namespace FlightBooking.Service.Data.Models
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-        public ICollection<Payments> Payments { get; set; } = new List<Payments>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

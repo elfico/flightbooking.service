@@ -2,7 +2,7 @@
 
 namespace FlightBooking.Service.Data.Models
 {
-    public class Payments
+    public class Payment
     {
         [Key]
         public int Id { get; set; }
@@ -13,6 +13,7 @@ namespace FlightBooking.Service.Data.Models
         public string CurrencyCode { get; set; } = null!;
         public string PaymentChannel { get; set; } = null!;
         public string PaymentStatus { get; set; } = null!;
+        public int BookingOrderId { get; set; }
         public DateTime TransactionDate { get; set; }
         public string? MetaData {  get; set; }
 

@@ -1,6 +1,8 @@
-﻿using FlightBooking.Service.Data.Configs;
-using FlightBooking.Service.Data.Models;
+﻿using FlightBooking.Service.Data;
+using FlightBooking.Service.Data.Configs;
+using FlightBooking.Service.Data.Repository;
 using FlightBooking.Service.Middleware;
+using FlightBooking.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -76,6 +78,10 @@ namespace FlightBooking.Service
             services.AddSignalR();
             services.AddHttpClient();
             services.AddHttpContextAccessor();
+
+            //Add our custom services
+            services.AddRepository();
+            services.AddServices();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>

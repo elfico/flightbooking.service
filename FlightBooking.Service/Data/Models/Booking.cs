@@ -15,16 +15,16 @@ namespace FlightBooking.Service.Data.Models
         public Gender Gender { get; set; }
 
         public string BookNumber { get; set; } = null!;
+        public int BookingOrderId { get; set; }
+
+        public int FlightId { get; set; }
+        public int FlightFareId { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public virtual FlightInformation InitialFlight { get; set; } = null!;
-        public virtual FlightInformation? ReturnFlight { get; set; }
-
-        public virtual FlightFare InitialFlightFare { get; set; } = null!;
-        public virtual FlightFare? ReturnFlightFare { get; set; }
-
+        public virtual FlightInformation FlightInformation  { get; set; } = null!;
+        public virtual FlightFare FlightFare { get; set; } = null!;
         public virtual BookingOrder BookingOrder { get; set; } = null!;
 
     }

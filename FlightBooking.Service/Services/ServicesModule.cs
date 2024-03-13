@@ -1,6 +1,10 @@
 ﻿namespace FlightBooking.Service.Services
 {
-    public class ServicesModule
+    public static class ServicesModule
     {
+        public static void AddServices(this IServiceCollection services)
+        {
+
+        }
     }
 }

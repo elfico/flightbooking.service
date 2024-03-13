@@ -44,7 +44,6 @@
 
   <ItemGroup>
     <Folder Include="Data\DTO\" />
-    <Folder Include="Data\Repository\" />
     <Folder Include="Services\Interfaces\" />
   </ItemGroup>
 
