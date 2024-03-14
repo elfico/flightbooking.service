@@ -8,12 +8,6 @@
 	<PropertyGroup>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="Data\SeedDatabase.cs" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Include="Data\SeedDatabase.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
