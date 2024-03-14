@@ -13,8 +13,8 @@ namespace FlightBooking.Service.Data.Models
         public string Address { get; set; } = null!;
         public DateOnly DateOfBirth { get; set; }
         public Gender Gender { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     }
 }

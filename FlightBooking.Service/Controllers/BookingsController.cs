@@ -40,7 +40,7 @@ namespace FlightBooking.Service.Controllers
         }
 
 
-        [HttpGet("{bookingId}")]
+        [HttpGet("id/{bookingId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> GetBookingById([FromRoute] int bookingId)
@@ -63,7 +63,7 @@ namespace FlightBooking.Service.Controllers
             return result.FormatResponse();
         }
 
-        [HttpGet("payment")]
+        [HttpGet("payment/{orderReference}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]

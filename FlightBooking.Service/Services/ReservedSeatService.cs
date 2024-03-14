@@ -44,7 +44,7 @@ namespace FlightBooking.Service.Services
             bool isSeatAvailable = _seatRepo.Query()
                 .Include(x => x.FlightInformation)
                 .Any(x => x.FlightNumber == booking.FlightInformation.FlightNumber
-                    && x.SeatId == requestDTO.SeatId);
+                    && x.SeatNumber == requestDTO.SeatId);
 
             if (!isSeatAvailable)
             {
@@ -53,7 +53,7 @@ namespace FlightBooking.Service.Services
 
             //reserve the seat
             int result = await _seatRepo.Query()
-                .Where(x => x.BookingNumber == requestDTO.BookingNumber && x.SeatId == requestDTO.SeatId)
+                .Where(x => x.BookingNumber == requestDTO.BookingNumber && x.SeatNumber == requestDTO.SeatId)
                 .ExecuteUpdateAsync(x => x.SetProperty(y => y.IsReserved, true));
 
             return new ServiceResponse<string>(string.Empty, (InternalCode)result);

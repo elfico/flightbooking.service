@@ -17,8 +17,8 @@ namespace FlightBooking.Service.Data.Models
         public DateTime TransactionDate { get; set; }
         public string? MetaData {  get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual BookingOrder BookingOrder { get; set; } = null!;
     }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FlightBooking.Service.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,10 +17,10 @@ namespace FlightBooking.Service.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OrderStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderStatus = table.Column<int>(type: "int", nullable: false),
                     NumberOfAdults = table.Column<int>(type: "int", nullable: false),
                     NumberOfChildren = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -44,6 +44,7 @@ namespace FlightBooking.Service.Migrations
                     ArrivalDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Airline = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SeatCapacity = table.Column<int>(type: "int", nullable: false),
+                    SeatReserved = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -91,7 +92,8 @@ namespace FlightBooking.Service.Migrations
                     FareCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FareName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Capacity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SeatCapacity = table.Column<int>(type: "int", nullable: false),
+                    SeatReserved = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -111,8 +113,9 @@ namespace FlightBooking.Service.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SeatId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FlightNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FlightInformationId = table.Column<int>(type: "int", nullable: false),
                     IsReserved = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -141,8 +144,9 @@ namespace FlightBooking.Service.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
-                    BookNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BookingOrderId = table.Column<int>(type: "int", nullable: false),
+                    BookingStatus = table.Column<int>(type: "int", nullable: false),
                     FlightId = table.Column<int>(type: "int", nullable: false),
                     FlightFareId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),

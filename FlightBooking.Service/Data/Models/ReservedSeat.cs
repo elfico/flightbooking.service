@@ -6,13 +6,13 @@ namespace FlightBooking.Service.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public string SeatId { get; set; } = null!; // e.g 1A, 33B
-        public string BookingNumber { get; set; } = null!;
+        public string SeatNumber { get; set; } = null!; // e.g 1A, 33B
+        public string? BookingNumber { get; set; }
         public string FlightNumber { get; set; } = null!;
         public int FlightInformationId { get; set; }
-        public bool IsReserved { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public bool IsReserved { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual FlightInformation FlightInformation { get; set; } = null!;
     }

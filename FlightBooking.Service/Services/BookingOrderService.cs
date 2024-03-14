@@ -148,7 +148,7 @@ namespace FlightBooking.Service.Services
             BookingOrder bookingOrder = new BookingOrder
             {
                 Bookings = bookings,
-                EmailAddress = order.EmailAddress,
+                Email = order.EmailAddress,
                 OrderStatus = BookingStatus.Confirmed,
                 TotalAmount = orderCost,
                 OrderReference = orderReference,
@@ -221,7 +221,7 @@ namespace FlightBooking.Service.Services
                 ProductDescription = string.Empty,
                 Amount = orderDetails.TotalAmount,
                 CurrencyCode = "USD",
-                CustomerEmail = orderDetails.EmailAddress,
+                CustomerEmail = orderDetails.Email,
                 ProductName = "Flight Booking Service"
             };
 

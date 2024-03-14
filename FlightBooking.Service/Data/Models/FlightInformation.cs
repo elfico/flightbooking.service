@@ -15,8 +15,8 @@ namespace FlightBooking.Service.Data.Models
         public string Airline { get; set; } = null!;
         public int SeatCapacity { get; set; }
         public int SeatReserved { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<FlightFare> FlightFares { get; set; } = new List<FlightFare>();
