@@ -4,11 +4,12 @@ using FlightBooking.Service.Data;
 using FlightBooking.Service.Data.DTO;
 using FlightBooking.Service.Data.Models;
 using FlightBooking.Service.Data.Repository;
+using FlightBooking.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
-    public class BookingService
+    public class BookingService : IBookingService
     {
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IMapper _mapper;
@@ -18,7 +19,7 @@ namespace FlightBooking.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<BookingDTO?>> GetBookingByBookingNumber(string bookingNumber)
+        public async Task<ServiceResponse<BookingDTO?>> GetBookingByBookingNumberAsync(string bookingNumber)
         {
             if (string.IsNullOrWhiteSpace(bookingNumber))
             {

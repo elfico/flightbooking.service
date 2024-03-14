@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlightBooking.Service.Data.DTO;
+using FlightBooking.Service.Services;
+using FlightBooking.Service.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace FlightBooking.Service.Controllers
 {
@@ -6,14 +10,33 @@ namespace FlightBooking.Service.Controllers
     [ApiController]
     public class SeatsController : ControllerBase
     {
-        public IActionResult GetAvailableSeats()
+        private readonly IReservedSeatService _service;
+        public SeatsController(IReservedSeatService service)
         {
-            return Ok();
+            _service = service;
         }
 
-        public IActionResult ReserveSeat()
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReservedSeatDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        public IActionResult GetAvailableSeats([FromQuery] string flightNumber)
         {
-            return Ok();
+            ServiceResponse<IEnumerable<ReservedSeatDTO>> result = _service.GetAvailableSeatsByFlightNumber(flightNumber);
+
+            return result.FormatResponse();
+        }
+
+        [HttpPost]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> ReserveSeat([FromBody] ReservedSeatRequestDTO requestDTO)
+        {
+            ServiceResponse<string> result = await _service.ReserveSeatAsync(requestDTO);
+
+            return result.FormatResponse();
         }
     }
 }

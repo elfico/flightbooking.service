@@ -22,12 +22,18 @@ namespace FlightBooking.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<string>> ReserveSeatAsync(string bookingNumber, string seatId)
+        public async Task<ServiceResponse<string>> ReserveSeatAsync(ReservedSeatRequestDTO requestDTO)
         {
+
+            if (requestDTO == null)
+            {
+                return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam);
+            }
+
             //check if booking is valid
             Booking? booking = await _bookingRepo.Query()
                .Include(x => x.FlightInformation)
-               .FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+               .FirstOrDefaultAsync(x => x.BookingNumber == requestDTO.BookingNumber);
 
             if (booking == null)
             {
@@ -38,7 +44,7 @@ namespace FlightBooking.Service.Services
             bool isSeatAvailable = _seatRepo.Query()
                 .Include(x => x.FlightInformation)
                 .Any(x => x.FlightNumber == booking.FlightInformation.FlightNumber
-                    && x.SeatId == seatId);
+                    && x.SeatId == requestDTO.SeatId);
 
             if (!isSeatAvailable)
             {
@@ -47,7 +53,7 @@ namespace FlightBooking.Service.Services
 
             //reserve the seat
             int result = await _seatRepo.Query()
-                .Where(x => x.BookingNumber == bookingNumber && x.SeatId == seatId)
+                .Where(x => x.BookingNumber == requestDTO.BookingNumber && x.SeatId == requestDTO.SeatId)
                 .ExecuteUpdateAsync(x => x.SetProperty(y => y.IsReserved, true));
 
             return new ServiceResponse<string>(string.Empty, (InternalCode)result);

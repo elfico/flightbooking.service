@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
-    public class BookingOrderService
+    public class BookingOrderService : IBookingOrderService
     {
         private readonly IGenericRepository<BookingOrder> _orderRepo;
         private readonly IGenericRepository<FlightInformation> _flightRepo;

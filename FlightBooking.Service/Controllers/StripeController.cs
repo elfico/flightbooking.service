@@ -1,5 +1,4 @@
 ﻿using FlightBooking.Service.Data.Configs;
-using FlightBooking.Service.Data.DTO;
 using FlightBooking.Service.Services;
 using FlightBooking.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,17 +20,6 @@ namespace FlightBooking.Service.Controllers
             _stripeService = stripeService;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GeneratePaymentLink([FromBody] StripeDataDTO stripeDataDTO)
-        {
-            ServiceResponse<string> result = _stripeService.GetStripeCheckoutUrl(stripeDataDTO);
-
-            return result.FormatResponse();
-        }
-
         //webhook for stripe to verify payment
         [HttpPost]
         public async Task<IActionResult> NotificationWebhookAsync()
@@ -51,7 +39,7 @@ namespace FlightBooking.Service.Controllers
                 return BadRequest();
             }
 
-            //Sinc this is the only event we are handling.
+            //Since this is the only event we are handling.
             if (stripeEvent.Type == Events.CheckoutSessionCompleted)
             {
                 var response = await _stripeService.ProcessPayment(stripeEvent);
