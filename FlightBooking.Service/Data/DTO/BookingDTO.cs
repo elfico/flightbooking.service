@@ -17,11 +17,10 @@ namespace FlightBooking.Service.Data.DTO
         public string BookingNumber { get; set; } = null!;
         public int BookingOrderId { get; set; }
         public BookingStatus BookingStatus { get; set; } = BookingStatus.Pending;
-        public string? SeatId { get; set; }
+        public string? SeatNumber { get; set; }
 
         public BookingFlightInformationDTO FlightInformation { get; set; } = null!;
         public BookingFlightFareDTO FlightFare { get; set; } = null!;
-
     }
 
     public class BookingRequestDTO

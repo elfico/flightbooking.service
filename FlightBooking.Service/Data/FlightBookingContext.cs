@@ -10,7 +10,6 @@ namespace FlightBooking.Service.Data
         {
         }
 
-
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<BookingOrder> BookingOrders { get; set; }
         public DbSet<ReservedSeat> ReservedSeats { get; set; }
@@ -67,6 +66,5 @@ namespace FlightBooking.Service.Data
         //{
         //    base.OnConfiguring(optionsBuilder);
         //}
-
     }
 }

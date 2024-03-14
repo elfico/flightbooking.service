@@ -13,6 +13,7 @@ namespace FlightBooking.Service.Services
     {
         private readonly IGenericRepository<FlightInformation> _flightRepo;
         private readonly IMapper _mapper;
+
         public FlightService(IGenericRepository<FlightInformation> flightRepo, IMapper mapper)
         {
             _mapper = mapper;

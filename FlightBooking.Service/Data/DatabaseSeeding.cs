@@ -127,9 +127,9 @@ namespace FlightBooking.Service.Data
 
             List<string> seatNumbers = new List<string>();
 
-            for(int i = 1; i < flightCapacity + 1; i++)
+            for (int i = 1; i < flightCapacity + 1; i++)
             {
-                if(seatCount > 4)
+                if (seatCount > 4)
                 {
                     seatId++;
                     seatCount = 1;
@@ -141,7 +141,7 @@ namespace FlightBooking.Service.Data
 
             List<ReservedSeat> reservedSeats = new List<ReservedSeat>();
 
-            foreach(var seatNumber in seatNumbers)
+            foreach (var seatNumber in seatNumbers)
             {
                 reservedSeats.Add(new ReservedSeat
                 {
@@ -154,7 +154,5 @@ namespace FlightBooking.Service.Data
 
             return reservedSeats;
         }
-
     }
-
 }

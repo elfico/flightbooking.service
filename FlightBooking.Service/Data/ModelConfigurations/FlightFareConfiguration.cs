@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using FlightBooking.Service.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using FlightBooking.Service.Data.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FlightBooking.Service.Data.ModelConfigurations
 {

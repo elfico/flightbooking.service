@@ -17,8 +17,8 @@ namespace FlightBooking.Service.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     NumberOfAdults = table.Column<int>(type: "int", nullable: false),
@@ -62,7 +62,7 @@ namespace FlightBooking.Service.Migrations
                     CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentChannel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -108,30 +108,6 @@ namespace FlightBooking.Service.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservedSeats",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FlightNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FlightInformationId = table.Column<int>(type: "int", nullable: false),
-                    IsReserved = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReservedSeats", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReservedSeats_FlightInformation_FlightInformationId",
-                        column: x => x.FlightInformationId,
-                        principalTable: "FlightInformation",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Bookings",
                 columns: table => new
                 {
@@ -140,9 +116,9 @@ namespace FlightBooking.Service.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BookingOrderId = table.Column<int>(type: "int", nullable: false),
@@ -168,6 +144,36 @@ namespace FlightBooking.Service.Migrations
                     table.ForeignKey(
                         name: "FK_Bookings_FlightInformation_FlightId",
                         column: x => x.FlightId,
+                        principalTable: "FlightInformation",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReservedSeats",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookingId = table.Column<int>(type: "int", nullable: true),
+                    FlightNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlightInformationId = table.Column<int>(type: "int", nullable: false),
+                    IsReserved = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReservedSeats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReservedSeats_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ReservedSeats_FlightInformation_FlightInformationId",
+                        column: x => x.FlightInformationId,
                         principalTable: "FlightInformation",
                         principalColumn: "Id");
                 });
@@ -198,6 +204,13 @@ namespace FlightBooking.Service.Migrations
                 column: "BookingOrderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReservedSeats_BookingId",
+                table: "ReservedSeats",
+                column: "BookingId",
+                unique: true,
+                filter: "[BookingId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReservedSeats_FlightInformationId",
                 table: "ReservedSeats",
                 column: "FlightInformationId");
@@ -207,19 +220,19 @@ namespace FlightBooking.Service.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Bookings");
-
-            migrationBuilder.DropTable(
                 name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "ReservedSeats");
 
             migrationBuilder.DropTable(
-                name: "FlightFares");
+                name: "Bookings");
 
             migrationBuilder.DropTable(
                 name: "BookingOrders");
+
+            migrationBuilder.DropTable(
+                name: "FlightFares");
 
             migrationBuilder.DropTable(
                 name: "FlightInformation");

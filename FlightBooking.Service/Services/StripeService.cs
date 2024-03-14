@@ -17,24 +17,21 @@ namespace FlightBooking.Service.Services
         private readonly StripeConfig _stripeConfig;
         private readonly IGenericRepository<Payment> _paymentRepo;
         private readonly IGenericRepository<BookingOrder> _orderRepo;
-        private readonly IGenericRepository<FlightInformation> _flightInfoRepo;
 
         private readonly ILogger<StripeService> _logger;
 
         public StripeService(IOptionsMonitor<StripeConfig> options, IGenericRepository<Payment> paymentRepo,
-            IGenericRepository<BookingOrder> orderRepo, IGenericRepository<FlightInformation> flightInfoRepo,
-            ILogger<StripeService> logger)
+            IGenericRepository<BookingOrder> orderRepo, ILogger<StripeService> logger)
         {
             _stripeConfig = options.CurrentValue;
             _paymentRepo = paymentRepo;
             _orderRepo = orderRepo;
-            _flightInfoRepo = flightInfoRepo;
             _logger = logger;
         }
 
         public ServiceResponse<string> GetStripeCheckoutUrl(StripeDataDTO stripeDataDTO)
         {
-            if(stripeDataDTO == null)
+            if (stripeDataDTO == null)
             {
                 return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam, "Invalid Data");
             }
@@ -86,10 +83,10 @@ namespace FlightBooking.Service.Services
 
         public async Task<ServiceResponse<string>> ProcessPayment(Event stripeEvent)
         {
-            string orderCode = string.Empty;
+            string orderNumber = string.Empty;
             string bookingNumber = string.Empty;
 
-            var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+            var session = stripeEvent.Data.Object as Session;
 
             //check if payment already saved, if yes, return
             bool isPaymentSaved = _paymentRepo.Query()
@@ -104,7 +101,7 @@ namespace FlightBooking.Service.Services
             Payment payment = new Payment
             {
                 TransactionDate = session!.Created,
-                BookingNumber = session.Id,
+                OrderNumber = session.Id,
                 MetaData = JsonConvert.SerializeObject(session),
                 BookingOrderId = Convert.ToInt32(session.Id),
                 CurrencyCode = session.Currency,
@@ -120,7 +117,7 @@ namespace FlightBooking.Service.Services
             //update flight and booking information
             var bookingOrder = await _orderRepo.Query()
                 .Include(x => x.Bookings)
-                .FirstOrDefaultAsync(x => x.OrderReference == orderCode);
+                .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
 
             if (bookingOrder == null)
             {
@@ -128,16 +125,14 @@ namespace FlightBooking.Service.Services
                 return new ServiceResponse<string>(string.Empty, InternalCode.Success);
             }
 
-            bookingOrder.OrderStatus = BookingStatus.Confirmed;
+            bookingOrder.OrderStatus = BookingStatus.Paid;
 
             foreach (var booking in bookingOrder.Bookings)
             {
-                booking.BookingStatus = BookingStatus.Confirmed;
+                booking.BookingStatus = BookingStatus.Paid;
             }
 
             await _orderRepo.SaveChangesToDbAsync();
-
-            //TODO: reduce number of available seats on the flight
 
             return new ServiceResponse<string>(string.Empty, InternalCode.Success);
         }

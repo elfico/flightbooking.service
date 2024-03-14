@@ -6,7 +6,8 @@ namespace FlightBooking.Service.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public string OrderReference { get; set; } = null!;
+
+        public string OrderNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
         public decimal TotalAmount { get; set; }
         public BookingStatus OrderStatus { get; set; } = BookingStatus.Pending;

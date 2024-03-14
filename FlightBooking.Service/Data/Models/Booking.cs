@@ -6,6 +6,7 @@ namespace FlightBooking.Service.Data.Models
     {
         [Key]
         public int Id { get; set; }
+
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
@@ -21,13 +22,15 @@ namespace FlightBooking.Service.Data.Models
 
         public int FlightId { get; set; }
         public int FlightFareId { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual FlightInformation FlightInformation  { get; set; } = null!;
+        public virtual FlightInformation FlightInformation { get; set; } = null!;
         public virtual FlightFare FlightFare { get; set; } = null!;
         public virtual BookingOrder BookingOrder { get; set; } = null!;
 
+        //one to one to for seats. one booking at most one seat
+
+        public ReservedSeat? ReservedSeat { get; set; }
     }
 }

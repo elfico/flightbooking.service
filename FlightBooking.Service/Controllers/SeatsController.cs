@@ -11,11 +11,11 @@ namespace FlightBooking.Service.Controllers
     public class SeatsController : ControllerBase
     {
         private readonly IReservedSeatService _service;
+
         public SeatsController(IReservedSeatService service)
         {
             _service = service;
         }
-
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReservedSeatDTO>))]

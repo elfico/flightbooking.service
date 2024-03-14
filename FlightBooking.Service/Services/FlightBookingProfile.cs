@@ -16,6 +16,14 @@ namespace FlightBooking.Service.Services
 
             CreateMap<FlightInformation, FlightInformationDTO>()
                 .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.SeatCapacity - src.SeatReserved));
+
+            CreateMap<FlightInformation, BookingFlightInformationDTO>();
+
+            CreateMap<FlightFare, BookingFlightFareDTO>()
+               .ForMember(dest => dest.FlightNumber, opt => opt.MapFrom(src => src.FlightInformation.FlightNumber));
+
+            CreateMap<Booking, BookingDTO>()
+                .ForMember(dest => dest.SeatNumber, opt => opt.MapFrom(src => src.ReservedSeat != null ? src.ReservedSeat.SeatNumber : null));
         }
     }
 }

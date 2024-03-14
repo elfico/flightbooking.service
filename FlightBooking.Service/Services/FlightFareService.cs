@@ -13,6 +13,7 @@ namespace FlightBooking.Service.Services
     {
         private readonly IGenericRepository<FlightFare> _fareRepository;
         private readonly IMapper _mapper;
+
         public FlightFareService(IMapper mapper, IGenericRepository<FlightFare> fareRepository)
         {
             _mapper = mapper;
@@ -26,8 +27,6 @@ namespace FlightBooking.Service.Services
                 .Where(x => x.FlightInformation.FlightNumber == flightNumber)
                 .ProjectTo<FlightFareDTO>(_mapper.ConfigurationProvider)
                 .ToList();
-
-            //TODO: Check if Flight doesn't exist?
 
             return new ServiceResponse<IEnumerable<FlightFareDTO>?>(fares, InternalCode.Success);
         }

@@ -13,6 +13,7 @@ namespace FlightBooking.Service.Services
     {
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IMapper _mapper;
+
         public BookingService(IGenericRepository<Booking> bookingRepo, IMapper mapper)
         {
             _bookingRepo = bookingRepo;
@@ -29,6 +30,7 @@ namespace FlightBooking.Service.Services
             var booking = await _bookingRepo.Query()
                 .Include(x => x.FlightFare)
                 .Include(x => x.FlightInformation)
+                .Include(x => x.ReservedSeat)
                 .FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
             if (booking == null)
@@ -38,7 +40,6 @@ namespace FlightBooking.Service.Services
 
             var bookingDTO = _mapper.Map<Booking, BookingDTO>(booking);
 
-
             return new ServiceResponse<BookingDTO?>(bookingDTO, InternalCode.Success);
         }
 
@@ -47,6 +48,7 @@ namespace FlightBooking.Service.Services
             var booking = await _bookingRepo.Query()
                 .Include(x => x.FlightFare)
                 .Include(x => x.FlightInformation)
+                .Include(x => x.ReservedSeat)
                 .FirstOrDefaultAsync(x => x.Id == bookingId);
 
             if (booking == null)
@@ -63,13 +65,32 @@ namespace FlightBooking.Service.Services
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                return new ServiceResponse<IEnumerable<BookingDTO>?>(null, InternalCode.InvalidParam, "No booking number supplied");
+                return new ServiceResponse<IEnumerable<BookingDTO>?>(null, InternalCode.InvalidParam, "No email supplied");
             }
 
             var bookings = _bookingRepo.Query()
                 .Include(x => x.FlightFare)
                 .Include(x => x.FlightInformation)
+                .Include(x => x.ReservedSeat)
                 .Where(x => x.Email == email)
+                .ProjectTo<BookingDTO>(_mapper.ConfigurationProvider)
+                .ToList();
+
+            return new ServiceResponse<IEnumerable<BookingDTO>?>(bookings, InternalCode.Success);
+        }
+
+        public ServiceResponse<IEnumerable<BookingDTO>?> GetBookingsByOrderNumber(string orderNumber)
+        {
+            if (string.IsNullOrWhiteSpace(orderNumber))
+            {
+                return new ServiceResponse<IEnumerable<BookingDTO>?>(null, InternalCode.InvalidParam, "No order number supplied");
+            }
+
+            var bookings = _bookingRepo.Query()
+                .Include(x => x.FlightFare)
+                .Include(x => x.FlightInformation)
+                .Include(x => x.ReservedSeat)
+                .Where(x => x.BookingOrder.OrderNumber == orderNumber)
                 .ProjectTo<BookingDTO>(_mapper.ConfigurationProvider)
                 .ToList();
 

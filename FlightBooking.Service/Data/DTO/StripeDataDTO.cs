@@ -29,5 +29,4 @@ namespace FlightBooking.Service.Data.DTO
         [Required]
         public string CurrencyCode { get; set; } = "USD";
     }
-
 }

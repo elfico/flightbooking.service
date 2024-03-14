@@ -46,7 +46,7 @@ namespace FlightBooking.Service.Services
             bool hasReturnFlight = !string.IsNullOrWhiteSpace(order.ReturnFlightNumber);
 
             //Outbound and Return flights cannot be the same
-            if(hasReturnFlight && order.ReturnFlightNumber == order.OutboundFlightNumber)
+            if (hasReturnFlight && order.ReturnFlightNumber == order.OutboundFlightNumber)
             {
                 return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.Unprocessable, "Outbound and return flights cannot be the same");
             }
@@ -132,7 +132,7 @@ namespace FlightBooking.Service.Services
                     Address = booking.Address,
                     Gender = booking.Gender,
                     BookingNumber = Guid.NewGuid().ToString("N")[..10].ToUpper(),
-                    BookingStatus = BookingStatus.Pending,
+                    BookingStatus = BookingStatus.Confirmed,
                     FlightId = outboundFlightInfo.Id,
                     FlightFareId = booking.OutboundFareId,
                     CreatedAt = DateTime.UtcNow
@@ -153,7 +153,7 @@ namespace FlightBooking.Service.Services
                         Address = booking.Address,
                         Gender = booking.Gender,
                         BookingNumber = Guid.NewGuid().ToString("N")[..10].ToUpper(),
-                        BookingStatus = BookingStatus.Pending,
+                        BookingStatus = BookingStatus.Confirmed,
                         FlightId = returnFlightInfo.Id,
                         FlightFareId = (int)booking.ReturnFareId!,
                         CreatedAt = DateTime.UtcNow
@@ -171,7 +171,7 @@ namespace FlightBooking.Service.Services
                 Email = order.Email,
                 OrderStatus = BookingStatus.Confirmed,
                 TotalAmount = totalAmount,
-                OrderReference = orderReference,
+                OrderNumber = orderReference,
                 CreatedAt = DateTime.UtcNow,
                 NumberOfAdults = 1,
                 NumberOfChildren = 1,
@@ -221,7 +221,7 @@ namespace FlightBooking.Service.Services
 
             //gett the order details
             var orderDetails = await _orderRepo.Query()
-                .FirstOrDefaultAsync(x => x.OrderReference == orderReference);
+                .FirstOrDefaultAsync(x => x.OrderNumber == orderReference);
 
             if (orderDetails == null)
             {
@@ -282,8 +282,10 @@ namespace FlightBooking.Service.Services
             //if return flight, then add the fares
             if (hasReturnFlight)
             {
-                validFlightFares = validFlightFares
-                    .Where(x => x.FlightInformation.FlightNumber == order.ReturnFlightNumber);
+                validFlightFares = _flightFareRepo.Query()
+                .Include(x => x.FlightInformation)
+                .Where(x => x.FlightInformation.FlightNumber == order.OutboundFlightNumber
+                    || x.FlightInformation.FlightNumber == order.ReturnFlightNumber);
             }
 
             //we get all the flight fares and save to the variable so we can reuse
@@ -300,7 +302,8 @@ namespace FlightBooking.Service.Services
             fareIds.AddRange(outboundFares);
 
             //we check if all fares are valid for that flight
-            var isAllFareValid = allFlightFares.Any(x => !outboundFares.Contains(x.Id));
+            var isAllFareValid = allFlightFares.Any(x => outboundFares.Contains(x.Id)
+                    && x.FlightInformation.FlightNumber == order.OutboundFlightNumber);
 
             //if atleast one of the fare in the outbound flight is invalid, return false
             if (!isAllFareValid)
@@ -317,7 +320,8 @@ namespace FlightBooking.Service.Services
 
                 fareIds.AddRange(returnFares);
 
-                isAllFareValid = allFlightFares.Any(x => !returnFares.Contains(x.Id));
+                isAllFareValid = allFlightFares.Any(x => returnFares.Contains(x.Id)
+                         && x.FlightInformation.FlightNumber == order.ReturnFlightNumber);
 
                 if (!isAllFareValid)
                 {

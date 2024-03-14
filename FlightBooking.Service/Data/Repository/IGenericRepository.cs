@@ -32,6 +32,5 @@ namespace FlightBooking.Service.Data.Repository
         IQueryable<T> OrderByText(IQueryable<T> data, SortOrder order, Expression<Func<T, string>> expression);
 
         IQueryable<T> OrderByDate(IQueryable<T> data, SortOrder order, Expression<Func<T, DateTime>> expression);
-
     }
 }

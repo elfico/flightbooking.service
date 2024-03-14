@@ -14,6 +14,7 @@ namespace FlightBooking.Service.Services
         private readonly IGenericRepository<ReservedSeat> _seatRepo;
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IMapper _mapper;
+
         public ReservedSeatService(IGenericRepository<ReservedSeat> seatRepository, IGenericRepository<Booking> bookingRepo,
             IMapper mapper)
         {
@@ -24,7 +25,6 @@ namespace FlightBooking.Service.Services
 
         public async Task<ServiceResponse<string>> ReserveSeatAsync(ReservedSeatRequestDTO requestDTO)
         {
-
             if (requestDTO == null)
             {
                 return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam);
@@ -41,20 +41,27 @@ namespace FlightBooking.Service.Services
             }
 
             //check if seat is available
-            bool isSeatAvailable = _seatRepo.Query()
+            ReservedSeat? existingSeat = await _seatRepo.Query()
                 .Include(x => x.FlightInformation)
-                .Any(x => x.FlightNumber == booking.FlightInformation.FlightNumber
-                    && x.SeatNumber == requestDTO.SeatId);
+                .FirstOrDefaultAsync(x => x.FlightNumber == booking.FlightInformation.FlightNumber
+                    && x.SeatNumber == requestDTO.SeatNumber);
 
-            if (!isSeatAvailable)
+            if (existingSeat == null)
             {
-                return new ServiceResponse<string>(string.Empty, InternalCode.Unprocessable, "The selected seat is not available for selection");
+                return new ServiceResponse<string>(string.Empty, InternalCode.Unprocessable, "The selected seat number does not exist");
+            }
+
+            if (existingSeat.IsReserved)
+            {
+                return new ServiceResponse<string>(string.Empty, InternalCode.Unprocessable, "The selected seat has already been reserved");
             }
 
             //reserve the seat
-            int result = await _seatRepo.Query()
-                .Where(x => x.BookingNumber == requestDTO.BookingNumber && x.SeatNumber == requestDTO.SeatId)
-                .ExecuteUpdateAsync(x => x.SetProperty(y => y.IsReserved, true));
+            existingSeat.IsReserved = true;
+            existingSeat.BookingNumber = booking.BookingNumber;
+            existingSeat.BookingId = booking.Id;
+
+            int result = await _seatRepo.SaveChangesToDbAsync();
 
             return new ServiceResponse<string>(string.Empty, (InternalCode)result);
         }

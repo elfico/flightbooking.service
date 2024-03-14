@@ -254,5 +254,4 @@ namespace FlightBooking.Service.Data.Repository
             return paginated;
         }
     }
-    
 }

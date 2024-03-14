@@ -12,6 +12,7 @@ namespace FlightBooking.Service.Controllers
     {
         private readonly IBookingService _bookingService;
         private readonly IBookingOrderService _bookingOrderService;
+
         public BookingsController(IBookingService bookingService, IBookingOrderService bookingOrderService)
         {
             _bookingService = bookingService;
@@ -39,6 +40,15 @@ namespace FlightBooking.Service.Controllers
             return result.FormatResponse();
         }
 
+        [HttpGet("orderNumber/{orderNumber}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BookingDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        public IActionResult GetBookingsByOrderNumber([FromRoute] string orderNumber)
+        {
+            ServiceResponse<IEnumerable<BookingDTO>?> result = _bookingService.GetBookingsByOrderNumber(orderNumber);
+
+            return result.FormatResponse();
+        }
 
         [HttpGet("id/{bookingId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingDTO))]

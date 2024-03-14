@@ -33,7 +33,7 @@
 
     public enum BookingStatus
     {
-        Pending = 0,
+        Pending = 1,
         Confirmed,
         Paid
     }

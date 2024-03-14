@@ -47,11 +47,10 @@ namespace FlightBooking.Service.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("DateOfBirth")
+                    b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -100,7 +99,7 @@ namespace FlightBooking.Service.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmailAddress")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -110,7 +109,7 @@ namespace FlightBooking.Service.Migrations
                     b.Property<int>("NumberOfChildren")
                         .HasColumnType("int");
 
-                    b.Property<string>("OrderReference")
+                    b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -224,10 +223,6 @@ namespace FlightBooking.Service.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BookingNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("BookingOrderId")
                         .HasColumnType("int");
 
@@ -243,6 +238,10 @@ namespace FlightBooking.Service.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentChannel")
@@ -281,6 +280,9 @@ namespace FlightBooking.Service.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BookingId")
+                        .HasColumnType("int");
+
                     b.Property<string>("BookingNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -305,6 +307,10 @@ namespace FlightBooking.Service.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique()
+                        .HasFilter("[BookingId] IS NOT NULL");
 
                     b.HasIndex("FlightInformationId");
 
@@ -357,12 +363,23 @@ namespace FlightBooking.Service.Migrations
 
             modelBuilder.Entity("FlightBooking.Service.Data.Models.ReservedSeat", b =>
                 {
+                    b.HasOne("FlightBooking.Service.Data.Models.Booking", "Booking")
+                        .WithOne("ReservedSeat")
+                        .HasForeignKey("FlightBooking.Service.Data.Models.ReservedSeat", "BookingId");
+
                     b.HasOne("FlightBooking.Service.Data.Models.FlightInformation", "FlightInformation")
                         .WithMany("ReservedSeats")
                         .HasForeignKey("FlightInformationId")
                         .IsRequired();
 
+                    b.Navigation("Booking");
+
                     b.Navigation("FlightInformation");
+                });
+
+            modelBuilder.Entity("FlightBooking.Service.Data.Models.Booking", b =>
+                {
+                    b.Navigation("ReservedSeat");
                 });
 
             modelBuilder.Entity("FlightBooking.Service.Data.Models.BookingOrder", b =>

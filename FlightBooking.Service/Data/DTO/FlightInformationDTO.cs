@@ -1,6 +1,6 @@
 ﻿namespace FlightBooking.Service.Data.DTO
 {
-    public class FlightInformationDTO: BookingFlightInformationDTO
+    public class FlightInformationDTO : BookingFlightInformationDTO
     {
         public int Id { get; set; }
         public int SeatCapacity { get; set; }
