@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
+    ///<inheritdoc />
     public class FlightFareService : IFlightFareService
     {
         private readonly IGenericRepository<FlightFare> _fareRepository;

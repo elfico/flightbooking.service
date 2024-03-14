@@ -74,7 +74,6 @@ namespace FlightBooking.Service.Controllers
         }
 
         [HttpGet("payment/{orderReference}")]
-        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProblemDetails))]

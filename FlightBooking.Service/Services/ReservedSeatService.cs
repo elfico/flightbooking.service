@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
+    ///<inheritdoc />
     public class ReservedSeatService : IReservedSeatService
     {
         private readonly IGenericRepository<ReservedSeat> _seatRepo;
@@ -74,6 +75,53 @@ namespace FlightBooking.Service.Services
                 .ToList();
 
             return new ServiceResponse<IEnumerable<ReservedSeatDTO>>(seats, InternalCode.Success);
+        }
+
+        public async Task<ServiceResponse<string>> GenerateSeatNumbersAsync(string flightNumber, int flightCapacity)
+        {
+            //assume seats are in group of 4 Alphabets e.g 1A, 1B, 1C, 1D
+
+            Dictionary<int, string> SeatMaps = new Dictionary<int, string>
+            {
+                {1, "A" },
+                {2, "B" },
+                {3, "C" },
+                {4, "D" }
+            };
+
+            int seatId = 1;
+            int seatCount = 1;
+
+            List<string> seatNumbers = new List<string>();
+
+            for (int i = 1; i < flightCapacity + 1; i++)
+            {
+                if (seatCount > 4)
+                {
+                    seatId++;
+                    seatCount = 1;
+                }
+
+                seatNumbers.Add(seatId + SeatMaps[seatCount]);
+                seatCount++;
+            }
+
+            List<ReservedSeat> reservedSeats = new List<ReservedSeat>();
+
+            foreach (var seatNumber in seatNumbers)
+            {
+                reservedSeats.Add(new ReservedSeat
+                {
+                    BookingNumber = null,
+                    FlightNumber = flightNumber,
+                    IsReserved = false,
+                    SeatNumber = seatNumber
+                });
+            }
+
+            int result = await _seatRepo.BulkCreateAsync(reservedSeats);
+
+            return new ServiceResponse<string>(string.Empty, (InternalCode)result);
         }
     }
 }

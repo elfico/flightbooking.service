@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using FlightBooking.Service.Data;
 using FlightBooking.Service.Data.DTO;
 using FlightBooking.Service.Data.Models;
@@ -9,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightBooking.Service.Services
 {
+    ///<inheritdoc />
     public class FlightService : IFlightService
     {
         private readonly IGenericRepository<FlightInformation> _flightRepo;
@@ -20,14 +20,19 @@ namespace FlightBooking.Service.Services
             _flightRepo = flightRepo;
         }
 
-        public ServiceResponse<IEnumerable<FlightInformationDTO>> GetFlightInformationAsync(string flightNumber)
+        public async Task<ServiceResponse<FlightInformationDTO?>> GetFlightInformationAsync(string flightNumber)
         {
-            var flights = _flightRepo.Query()
-                .Where(x => x.FlightNumber == flightNumber)
-                .ProjectTo<FlightInformationDTO>(_mapper.ConfigurationProvider)
-                .ToList();
+            FlightInformation? flight = await _flightRepo.Query()
+                .FirstOrDefaultAsync(x => x.FlightNumber == flightNumber);
 
-            return new ServiceResponse<IEnumerable<FlightInformationDTO>>(flights, InternalCode.Success);
+            if (flight == null)
+            {
+                return new ServiceResponse<FlightInformationDTO?>(null, InternalCode.EntityNotFound, "flight not found");
+            }
+
+            FlightInformationDTO flightDto = _mapper.Map<FlightInformation, FlightInformationDTO>(flight);
+
+            return new ServiceResponse<FlightInformationDTO?>(flightDto, InternalCode.Success);
         }
 
         public async Task<ServiceResponse<string>> UpdateFlightCapacityAsync(string flightNumber, int bookedSeats)

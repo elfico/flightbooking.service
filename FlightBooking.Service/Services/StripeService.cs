@@ -12,6 +12,7 @@ using Stripe.Checkout;
 
 namespace FlightBooking.Service.Services
 {
+    ///<inheritdoc />
     public class StripeService : IStripeService
     {
         private readonly StripeConfig _stripeConfig;
