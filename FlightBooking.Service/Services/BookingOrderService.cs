@@ -37,17 +37,26 @@ namespace FlightBooking.Service.Services
 
             /*
                 Checks:
+                - outbound and return flights cannot be same
                 - Check if all the flights are available
                 - Check if the fares have available seats
                 - If Checks are not passed, return 422
              */
 
             bool hasReturnFlight = !string.IsNullOrWhiteSpace(order.ReturnFlightNumber);
+
+            //Outbound and Return flights cannot be the same
+            if(hasReturnFlight && order.ReturnFlightNumber == order.OutboundFlightNumber)
+            {
+                return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.Unprocessable, "Outbound and return flights cannot be the same");
+            }
+
             int totalFlights = order.Bookings.Count;
 
             FlightInformation outboundFlightInfo = new FlightInformation();
             FlightInformation returnFlightInfo = new FlightInformation();
 
+            //Check if the outbound flight is valid and if seats are available
             var outboundFlight = CheckAvailableFlight(order.OutboundFlightNumber, totalFlights);
 
             //If flight not valid, return false
@@ -56,6 +65,7 @@ namespace FlightBooking.Service.Services
                 return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.Unprocessable, "The selected flight is not valid");
             }
 
+            //if it's booked to Max, return error
             if (outboundFlight.IsBookedToMax)
             {
                 return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.Unprocessable, "The number of flights exceed number of available seats");
@@ -63,10 +73,12 @@ namespace FlightBooking.Service.Services
 
             outboundFlightInfo = outboundFlight.FlightInformation;
 
-            //Check if Return flight available
+            //Check if Return flight available and not booked to max
 
             if (hasReturnFlight)
             {
+                //If none of the Booking
+
                 var returnFlight = CheckAvailableFlight(order.ReturnFlightNumber!, totalFlights);
 
                 if (returnFlight.FlightInformation == null)
@@ -82,8 +94,13 @@ namespace FlightBooking.Service.Services
                 returnFlightInfo = returnFlight.FlightInformation;
             }
 
-            //Check if the selected Fare has seats available
-            var (IsAnyFareMaxedOut, FareCodes) = CheckIfAnyFareIsMaxedOut(order, hasReturnFlight);
+            //Check if the selected Fares for each flight is valid and seats are available
+            var (IsAllFareExists, IsAnyFareMaxedOut, FareCodes) = CheckIfAnyFareIsMaxedOut(order, hasReturnFlight);
+
+            if (!IsAllFareExists)
+            {
+                return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.Unprocessable, "Some selected fare do not exist. Please check that all fare exists");
+            }
 
             if (IsAnyFareMaxedOut)
             {
@@ -101,6 +118,7 @@ namespace FlightBooking.Service.Services
             //Create all the bookings
             List<Booking> bookings = new List<Booking>();
 
+            decimal totalAmount = 0;
             foreach (var booking in order.Bookings)
             {
                 //TODO: Use AutoMapper
@@ -116,9 +134,11 @@ namespace FlightBooking.Service.Services
                     BookingNumber = Guid.NewGuid().ToString("N")[..10].ToUpper(),
                     BookingStatus = BookingStatus.Pending,
                     FlightId = outboundFlightInfo.Id,
-                    FlightFareId = booking.OutboundFlightFareId,
+                    FlightFareId = booking.OutboundFareId,
                     CreatedAt = DateTime.UtcNow
                 });
+
+                totalAmount += allFlightFares.FirstOrDefault(x => x.Id == booking.OutboundFareId)!.Price;
 
                 //If return flight, add a seperate booking
                 if (hasReturnFlight)
@@ -135,22 +155,22 @@ namespace FlightBooking.Service.Services
                         BookingNumber = Guid.NewGuid().ToString("N")[..10].ToUpper(),
                         BookingStatus = BookingStatus.Pending,
                         FlightId = returnFlightInfo.Id,
-                        FlightFareId = (int)booking.ReturnFlightFareId!,
+                        FlightFareId = (int)booking.ReturnFareId!,
                         CreatedAt = DateTime.UtcNow
                     });
+
+                    totalAmount += allFlightFares.FirstOrDefault(x => x.Id == booking.ReturnFareId)!.Price;
                 }
             }
 
             //Sum all cost as part of Order
-            decimal orderCost = allFlightFares.Where(x => FareCodes.Contains(x.Id))
-                .Sum(x => x.Price);
 
             BookingOrder bookingOrder = new BookingOrder
             {
                 Bookings = bookings,
-                Email = order.EmailAddress,
+                Email = order.Email,
                 OrderStatus = BookingStatus.Confirmed,
-                TotalAmount = orderCost,
+                TotalAmount = totalAmount,
                 OrderReference = orderReference,
                 CreatedAt = DateTime.UtcNow,
                 NumberOfAdults = 1,
@@ -175,9 +195,9 @@ namespace FlightBooking.Service.Services
                 SuccessUrl = string.Empty,
                 CancelUrl = string.Empty,
                 ProductDescription = string.Empty,
-                Amount = orderCost,
+                Amount = totalAmount,
                 CurrencyCode = "USD",
-                CustomerEmail = order.EmailAddress,
+                CustomerEmail = order.Email,
                 ProductName = "Flight Booking Service"
             };
 
@@ -252,30 +272,58 @@ namespace FlightBooking.Service.Services
             return (flightInformation, totalFlights > availableFlightCapacity);
         }
 
-        private (bool IsAnyFareMaxedOut, List<int> FareCodes) CheckIfAnyFareIsMaxedOut(BookingOrderDTO order, bool hasReturnFlight)
+        private (bool IsAllFareExists, bool IsAnyFareMaxedOut, List<int> FareCodes) CheckIfAnyFareIsMaxedOut(BookingOrderDTO order, bool hasReturnFlight)
         {
-            List<int> fareCodes = new List<int>();
-            var outboundFares = order.Bookings.Select(x => x.OutboundFlightFareId).ToList();
+            //get all flight fares for all the list ID. We can then use throughout the booking process
+            var validFlightFares = _flightFareRepo.Query()
+                .Include(x => x.FlightInformation)
+                .Where(x => x.FlightInformation.FlightNumber == order.OutboundFlightNumber);
 
-            fareCodes.AddRange(outboundFares);
+            //if return flight, then add the fares
             if (hasReturnFlight)
             {
-                //if the booking has no return flight fare, use the outbound flight fare
-                foreach (var booking in order.Bookings)
-                {
-                    if (booking.ReturnFlightFareId == null)
-                    {
-                        fareCodes.Add(booking.OutboundFlightFareId);
-                        continue;
-                    }
-                    fareCodes.Add(booking.OutboundFlightFareId!);
-                }
+                validFlightFares = validFlightFares
+                    .Where(x => x.FlightInformation.FlightNumber == order.ReturnFlightNumber);
             }
 
-            //get all flight fares for all the list ID. We can then use throughout the booking process
-            allFlightFares = _flightFareRepo.Query()
-                .Where(x => fareCodes.Contains(x.Id))
+            //we get all the flight fares and save to the variable so we can reuse
+            allFlightFares = validFlightFares.ToList();
+
+            List<int> fareIds = new List<int>();
+
+            //get all fare Id
+            var outboundFares = order.Bookings
+                .Select(x => x.OutboundFareId)
                 .ToList();
+
+            //Add to a list
+            fareIds.AddRange(outboundFares);
+
+            //we check if all fares are valid for that flight
+            var isAllFareValid = allFlightFares.Any(x => !outboundFares.Contains(x.Id));
+
+            //if atleast one of the fare in the outbound flight is invalid, return false
+            if (!isAllFareValid)
+            {
+                return (false, true, new List<int>());
+            }
+
+            //check the codes for the return flights are also valid
+            if (hasReturnFlight)
+            {
+                var returnFares = order.Bookings
+                    .Select(x => (int)x.ReturnFareId!)
+                    .ToList();
+
+                fareIds.AddRange(returnFares);
+
+                isAllFareValid = allFlightFares.Any(x => !returnFares.Contains(x.Id));
+
+                if (!isAllFareValid)
+                {
+                    return (false, true, new List<int>());
+                }
+            }
 
             var flightFares = allFlightFares
                 .Select(y => new
@@ -285,18 +333,24 @@ namespace FlightBooking.Service.Services
                     AvailableSeats = y.SeatCapacity - y.SeatReserved
                 }).ToList();
 
-            var fareGroup = fareCodes.GroupBy(x => x).ToList();
+            //group the fares by Id
+            var fareGroup = fareIds.GroupBy(x => x).ToList();
+
             bool isAnyFareMaxedOut = true;
+
+            //for each fare, check if the seats are available
             foreach (var group in fareGroup)
             {
                 isAnyFareMaxedOut = flightFares.Any(x => x.Id == group.Key && group.Count() > x.AvailableSeats);
+
+                //if any fare is maxed out, terminate the loop
                 if (isAnyFareMaxedOut)
                 {
                     break;
                 }
             }
 
-            return (isAnyFareMaxedOut, fareCodes);
+            return (true, isAnyFareMaxedOut, fareIds);
         }
 
         private async Task UpdateAvailableSeats(BookingOrderDTO order, List<int> fareCodes)
@@ -321,7 +375,7 @@ namespace FlightBooking.Service.Services
 
             foreach (var fare in grouped)
             {
-                await _flightFareRepo.Query()
+                result = await _flightFareRepo.Query()
                     .Where(x => x.Id == fare.Key)
                     .ExecuteUpdateAsync(x => x.SetProperty(y => y.SeatReserved, y => y.SeatReserved + fare.Count()));
             }

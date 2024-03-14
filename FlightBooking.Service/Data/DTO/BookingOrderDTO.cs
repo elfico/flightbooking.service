@@ -5,13 +5,14 @@ namespace FlightBooking.Service.Data.DTO
     public class BookingOrderDTO
     {
         [Required]
-        public string EmailAddress { get; set; } = null!;
+        public string Email { get; set; } = null!;
 
         [Required]
         public string OutboundFlightNumber { get; set; } = null!;
 
         public string? ReturnFlightNumber { get; set; }
 
+        [Required]
         public List<BookingRequestDTO> Bookings { get; set; } = new List<BookingRequestDTO>();
     }
 

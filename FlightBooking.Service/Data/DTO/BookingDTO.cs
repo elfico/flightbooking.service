@@ -33,7 +33,9 @@ namespace FlightBooking.Service.Data.DTO
         public string LastName { get; set; } = null!;
 
         public string PhoneNumber { get; set; } = null!;
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; }
+
+        [Required]
         public string Address { get; set; } = null!;
 
         [Required]
@@ -44,8 +46,8 @@ namespace FlightBooking.Service.Data.DTO
 
         [Required]
         [Range(1, int.MaxValue)]
-        public int OutboundFlightFareId { get; set; } //We are keeping Fare per booking to allow flexibility e.g Adult in Economy and Child in Business class
+        public int OutboundFareId { get; set; } //We are keeping Fare per booking to allow flexibility e.g Adult in Economy and Child in Business class
 
-        public int? ReturnFlightFareId { get; set; }
+        public int? ReturnFareId { get; set; }
     }
 }
