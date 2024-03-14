@@ -160,10 +160,10 @@ namespace FlightBooking.Service.Services
         }
     }
 
-    public class ServiceResponse<T> //where T : class
+    public class ServiceResponse<T>
     {
         public InternalCode ServiceCode { get; set; } = InternalCode.Failed;
-        public T Data { get; set; }// = null;
+        public T Data { get; set; }
         public string Message { get; set; }
 
         public ServiceResponse(T data, InternalCode serviceCode = InternalCode.Failed, string message = "")

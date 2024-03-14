@@ -4,7 +4,7 @@
     {
         public static void AddConfigSettings(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.Configure<EmailConfig>(configuration.GetSection(EmailConfig.ConfigName));
+            services.Configure<StripeConfig>(configuration.GetSection(StripeConfig.ConfigName));
         }
     }
 }
