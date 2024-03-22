@@ -7,6 +7,7 @@
   </PropertyGroup>
 	<PropertyGroup>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<UserSecretsId>b1b4ccfd-9fcb-4702-b4e5-c4e88d0bc805</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>

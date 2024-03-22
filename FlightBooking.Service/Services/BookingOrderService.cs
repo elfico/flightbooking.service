@@ -192,37 +192,37 @@ namespace FlightBooking.Service.Services
              */
             StripeDataDTO stripeData = new StripeDataDTO
             {
-                PaymentReference = Guid.NewGuid().ToString("N").ToUpper(),
-                SuccessUrl = string.Empty,
-                CancelUrl = string.Empty,
-                ProductDescription = string.Empty,
+                SuccessUrl = "https://localhost:44321/success",
+                CancelUrl = "https://localhost:44321/cancel",
+                ProductDescription = $"Booking for {orderReference}",
                 Amount = totalAmount,
                 CurrencyCode = "USD",
                 CustomerEmail = order.Email,
-                ProductName = "Flight Booking Service"
+                ProductName = "Flight Booking Service",
+                OrderNumber = orderReference,
             };
 
             var stripeResponse = _stripeService.GetStripeCheckoutUrl(stripeData);
 
             BookingResponseDTO bookingResponse = new BookingResponseDTO
             {
-                OrderReference = orderReference,
+                OrderNumber = orderReference,
                 PaymentLink = stripeResponse.Data
             };
 
             return new ServiceResponse<BookingResponseDTO?>(bookingResponse, InternalCode.Success);
         }
 
-        public async Task<ServiceResponse<BookingResponseDTO?>> GetCheckoutUrlAsync(string orderReference)
+        public async Task<ServiceResponse<BookingResponseDTO?>> GetCheckoutUrlAsync(string orderNumber)
         {
-            if (string.IsNullOrWhiteSpace(orderReference))
+            if (string.IsNullOrWhiteSpace(orderNumber))
             {
                 return new ServiceResponse<BookingResponseDTO?>(null, InternalCode.InvalidParam, "Order reference not supplied");
             }
 
             //gett the order details
             var orderDetails = await _orderRepo.Query()
-                .FirstOrDefaultAsync(x => x.OrderNumber == orderReference);
+                .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
 
             if (orderDetails == null)
             {
@@ -236,21 +236,21 @@ namespace FlightBooking.Service.Services
 
             StripeDataDTO stripeData = new StripeDataDTO
             {
-                PaymentReference = Guid.NewGuid().ToString("N").ToUpper(),
-                SuccessUrl = string.Empty,
-                CancelUrl = string.Empty,
-                ProductDescription = string.Empty,
+                SuccessUrl = "https://localhost:44321/success",
+                CancelUrl = "https://localhost:44321/cancel",
+                ProductDescription = $"Booking for Order : {orderDetails.OrderNumber}",
                 Amount = orderDetails.TotalAmount,
                 CurrencyCode = "USD",
                 CustomerEmail = orderDetails.Email,
-                ProductName = "Flight Booking Service"
+                ProductName = "Flight Booking Service",
+                OrderNumber = orderNumber
             };
 
             var stripeResponse = _stripeService.GetStripeCheckoutUrl(stripeData);
 
             BookingResponseDTO bookingResponse = new BookingResponseDTO
             {
-                OrderReference = orderReference,
+                OrderNumber = orderNumber,
                 PaymentLink = stripeResponse.Data
             };
 

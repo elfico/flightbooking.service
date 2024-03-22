@@ -24,9 +24,9 @@ namespace FlightBooking.Service.Data.DTO
         public string CustomerEmail { get; set; } = null!;
 
         [Required]
-        public string PaymentReference { get; set; } = null!;
+        public string CurrencyCode { get; set; } = "USD";
 
         [Required]
-        public string CurrencyCode { get; set; } = "USD";
+        public string OrderNumber { get; set; } = null!;
     }
 }

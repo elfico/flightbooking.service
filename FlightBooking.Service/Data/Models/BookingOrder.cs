@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightBooking.Service.Data.Models
 {
@@ -9,6 +10,8 @@ namespace FlightBooking.Service.Data.Models
 
         public string OrderNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
+
+        [Precision(19,4)]
         public decimal TotalAmount { get; set; }
         public BookingStatus OrderStatus { get; set; } = BookingStatus.Pending;
         public int NumberOfAdults { get; set; }

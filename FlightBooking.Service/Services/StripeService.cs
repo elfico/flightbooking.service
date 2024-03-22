@@ -48,26 +48,26 @@ namespace FlightBooking.Service.Services
                 var options = new SessionCreateOptions
                 {
                     LineItems = new List<SessionLineItemOptions>
-                {
-                  new SessionLineItemOptions
-                  {
-                    PriceData = new SessionLineItemPriceDataOptions
                     {
-                        Currency = stripeDataDTO.CurrencyCode,
-                        UnitAmountDecimal = amountInCents, //in cents
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                      new SessionLineItemOptions
+                      {
+                        PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Name = stripeDataDTO.ProductName,
-                            Description = stripeDataDTO.ProductDescription
-                        }
+                            Currency = stripeDataDTO.CurrencyCode,
+                            UnitAmountDecimal = amountInCents, //in cents
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = stripeDataDTO.ProductName,
+                                Description = stripeDataDTO.ProductDescription
+                            },
+                        },
+                        Quantity = 1,
+                      },
                     },
-                    Quantity = 1,
-                  },
-                },
                     Mode = "payment",
                     SuccessUrl = stripeDataDTO.SuccessUrl,
                     CancelUrl = stripeDataDTO.CancelUrl,
-                    ClientReferenceId = stripeDataDTO.PaymentReference,
+                    ClientReferenceId = stripeDataDTO.OrderNumber,
                     CustomerEmail = stripeDataDTO.CustomerEmail,
                 };
                 var service = new SessionService();
@@ -84,38 +84,24 @@ namespace FlightBooking.Service.Services
 
         public async Task<ServiceResponse<string>> ProcessPayment(Event stripeEvent)
         {
-            string orderNumber = string.Empty;
-            string bookingNumber = string.Empty;
+            if(stripeEvent == null)
+            {
+                return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam);
+            }
 
             var session = stripeEvent.Data.Object as Session;
 
             //check if payment already saved, if yes, return
             bool isPaymentSaved = _paymentRepo.Query()
-                .Any(x => x.PaymentReference == session!.ClientReferenceId);
+                .Any(x => x.OrderNumber == session!.ClientReferenceId);
 
             if (isPaymentSaved)
             {
                 return new ServiceResponse<string>(string.Empty, InternalCode.Success);
             }
 
-            //save payment
-            Payment payment = new Payment
-            {
-                TransactionDate = session!.Created,
-                OrderNumber = session.Id,
-                MetaData = JsonConvert.SerializeObject(session),
-                BookingOrderId = Convert.ToInt32(session.Id),
-                CurrencyCode = session.Currency,
-                CustomerEmail = session.CustomerEmail,
-                PaymentReference = session.ClientReferenceId,
-                PaymentStatus = session.PaymentStatus,
-                CreatedAt = DateTime.UtcNow,
-                TransactionAmount = (decimal)session.AmountTotal!,
-            };
+            string orderNumber = session!.ClientReferenceId;
 
-            await _paymentRepo.CreateAsync(payment);
-
-            //update flight and booking information
             var bookingOrder = await _orderRepo.Query()
                 .Include(x => x.Bookings)
                 .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
@@ -125,6 +111,25 @@ namespace FlightBooking.Service.Services
                 _logger.LogCritical("Payment made for a booking that doesn't exist");
                 return new ServiceResponse<string>(string.Empty, InternalCode.Success);
             }
+
+            //save payment
+            Payment payment = new Payment
+            {
+                TransactionDate = session!.Created,
+                OrderNumber = orderNumber,
+                MetaData = JsonConvert.SerializeObject(session),
+                BookingOrderId = bookingOrder.Id,
+                CurrencyCode = session.Currency,
+                CustomerEmail = session.CustomerEmail,
+                PaymentReference = Guid.NewGuid().ToString("N").ToUpper(),
+                PaymentStatus = session.PaymentStatus,
+                CreatedAt = DateTime.UtcNow,
+                TransactionAmount = (decimal)session.AmountTotal!,
+            };
+
+            await _paymentRepo.CreateAsync(payment);
+
+            //update flight and booking information
 
             bookingOrder.OrderStatus = BookingStatus.Paid;
 

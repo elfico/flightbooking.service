@@ -73,14 +73,14 @@ namespace FlightBooking.Service.Controllers
             return result.FormatResponse();
         }
 
-        [HttpGet("payment/{orderReference}")]
+        [HttpGet("payment/{orderNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> GetBookingPayment([FromRoute] string orderReference)
+        public async Task<IActionResult> GetBookingPayment([FromRoute] string orderNumber)
         {
-            ServiceResponse<BookingResponseDTO?> result = await _bookingOrderService.GetCheckoutUrlAsync(orderReference);
+            ServiceResponse<BookingResponseDTO?> result = await _bookingOrderService.GetCheckoutUrlAsync(orderNumber);
 
             return result.FormatResponse();
         }

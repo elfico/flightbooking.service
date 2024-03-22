@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightBooking.Service.Data.Models
 {
@@ -10,6 +11,8 @@ namespace FlightBooking.Service.Data.Models
         public int FlightInformationId { get; set; }
         public string FareCode { get; set; } = null!;
         public string FareName { get; set; } = null!;
+
+        [Precision(19, 4)]
         public decimal Price { get; set; }
         public int SeatCapacity { get; set; }
         public int SeatReserved { get; set; }

@@ -18,7 +18,7 @@ namespace FlightBooking.Service.Data.DTO
 
     public class BookingResponseDTO
     {
-        public string OrderReference { get; set; } = null!;
+        public string OrderNumber { get; set; } = null!;
         public string PaymentLink { get; set; } = null!;
         public DateTime OrderExpiration { get; set; } = DateTime.UtcNow.AddHours(1);
     }
