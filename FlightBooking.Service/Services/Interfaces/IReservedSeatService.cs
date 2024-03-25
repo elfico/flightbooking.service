@@ -18,7 +18,6 @@ namespace FlightBooking.Service.Services.Interfaces
         /// <returns></returns>
         Task<ServiceResponse<string>> ReserveSeatAsync(ReservedSeatRequestDTO requestDTO);
 
-
         /// <summary>
         /// Generates seat numbers for a flight based on flight capacity
         /// </summary>

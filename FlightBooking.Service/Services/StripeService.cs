@@ -84,7 +84,7 @@ namespace FlightBooking.Service.Services
 
         public async Task<ServiceResponse<string>> ProcessPayment(Event stripeEvent)
         {
-            if(stripeEvent == null)
+            if (stripeEvent == null)
             {
                 return new ServiceResponse<string>(string.Empty, InternalCode.InvalidParam);
             }
@@ -125,6 +125,7 @@ namespace FlightBooking.Service.Services
                 PaymentStatus = session.PaymentStatus,
                 CreatedAt = DateTime.UtcNow,
                 TransactionAmount = (decimal)session.AmountTotal!,
+                PaymentChannel = "Stripe",
             };
 
             await _paymentRepo.CreateAsync(payment);

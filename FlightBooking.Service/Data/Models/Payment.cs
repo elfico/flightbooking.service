@@ -12,6 +12,7 @@ namespace FlightBooking.Service.Data.Models
 
         [Precision(19, 4)]
         public decimal TransactionAmount { get; set; }
+
         public string PaymentReference { get; set; } = null!;
         public string OrderNumber { get; set; } = null!;
         public string CurrencyCode { get; set; } = null!;

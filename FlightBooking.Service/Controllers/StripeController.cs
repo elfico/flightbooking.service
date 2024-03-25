@@ -15,6 +15,7 @@ namespace FlightBooking.Service.Controllers
         private readonly StripeConfig _stripeConfig;
         private readonly IStripeService _stripeService;
         private readonly ILogger<StripeController> _logger;
+
         public StripeController(IOptionsMonitor<StripeConfig> options, IStripeService stripeService, ILogger<StripeController> logger)
         {
             _stripeConfig = options.CurrentValue;

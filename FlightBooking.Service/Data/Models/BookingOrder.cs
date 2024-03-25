@@ -11,8 +11,9 @@ namespace FlightBooking.Service.Data.Models
         public string OrderNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
 
-        [Precision(19,4)]
+        [Precision(19, 4)]
         public decimal TotalAmount { get; set; }
+
         public BookingStatus OrderStatus { get; set; } = BookingStatus.Pending;
         public int NumberOfAdults { get; set; }
         public int NumberOfChildren { get; set; }

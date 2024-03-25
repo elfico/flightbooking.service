@@ -44,7 +44,7 @@ namespace FlightBooking.Service
             services.AddDbContext<FlightBookingContext>(options =>
             {
                 //options.UseLoggerFactory(_myLoggerFactory).EnableSensitiveDataLogging(); //DEV: ENABLE TO SEE SQL Queries
-                
+
                 //To Use Sql Server
                 //options.UseSqlServer(Configuration.GetConnectionString("FlightBookingServiceDb"));
 
@@ -54,7 +54,6 @@ namespace FlightBooking.Service
                     .EnableSensitiveDataLogging()
                     .EnableDetailedErrors();
             });
-
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

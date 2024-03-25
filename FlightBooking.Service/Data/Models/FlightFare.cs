@@ -14,6 +14,7 @@ namespace FlightBooking.Service.Data.Models
 
         [Precision(19, 4)]
         public decimal Price { get; set; }
+
         public int SeatCapacity { get; set; }
         public int SeatReserved { get; set; }
 

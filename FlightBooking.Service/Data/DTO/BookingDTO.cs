@@ -11,11 +11,15 @@ namespace FlightBooking.Service.Data.DTO
         public string Email { get; set; } = null!;
         public string Address { get; set; } = null!;
         public DateOnly DateOfBirth { get; set; }
+
+        [EnumDataType(typeof(Gender))]
         public Gender Gender { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public string BookingNumber { get; set; } = null!;
         public int BookingOrderId { get; set; }
+
+        [EnumDataType(typeof(BookingStatus))]
         public BookingStatus BookingStatus { get; set; } = BookingStatus.Pending;
         public string? SeatNumber { get; set; }
 
