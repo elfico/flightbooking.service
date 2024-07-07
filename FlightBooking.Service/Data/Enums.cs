@@ -11,6 +11,7 @@
 
     public enum InternalCode
     {
+        ConcurrencyError = -2,
         UpdateError = -1,
         Failed,
         Success,

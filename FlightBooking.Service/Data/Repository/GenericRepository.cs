@@ -158,6 +158,7 @@ namespace FlightBooking.Service.Data.Repository
         //calling this once works since we are using just one DbContext
         //TODO: returning 0 should not lead to 500 error. 0 means no entries were added which may be because all entries have been added already
         //fix this after tests have been writing for projects
+        private int retryCount = 0;
         public async Task<int> SaveChangesToDbAsync()
         {
             _logger.LogInformation(RepositoryConstants.LoggingStarted);
@@ -176,8 +177,18 @@ namespace FlightBooking.Service.Data.Repository
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogError(ex, RepositoryConstants.UpdateConcurrencyException);
-                saveResult = (int)InternalCode.UpdateError;
-                throw;
+
+                //if(retryCount < 2)
+                //{
+                //    foreach(var entries in ex.Entries)
+                //    {
+
+                //    }
+                //}
+                //retry
+
+                saveResult = (int)InternalCode.ConcurrencyError;
+                //throw;
             }
             catch (DbUpdateException ex)
             {

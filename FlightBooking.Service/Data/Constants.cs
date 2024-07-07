@@ -31,6 +31,7 @@
         public const string UnprocessableEntity = "The action cannot be processed";
         public const string InternalServerError = "An internal server error and request could not processed";
         public const string OperationFailed = "Operation failed";
+        public const string ConcurrencyError = "A database concurrency error occured. Try again";
 
         public const string ParameterEmptyOrNull = "The parameter list is null or empty";
         public const string RequestIdRequired = "Request Id is required";

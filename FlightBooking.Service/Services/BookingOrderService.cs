@@ -213,6 +213,24 @@ namespace FlightBooking.Service.Services
             return new ServiceResponse<BookingResponseDTO?>(bookingResponse, InternalCode.Success);
         }
 
+        public async Task<ServiceResponse<string>> UpdateBookingOrderAsync()
+        {
+            var bookingOrder = await _orderRepo.GetByIdAsync(1);
+
+            if(bookingOrder == null)
+            {
+                return new ServiceResponse<string>(string.Empty, InternalCode.EntityNotFound);
+            }
+
+            bookingOrder.NumberOfChildren = 3;
+            bookingOrder.NumberOfChildren = 3;
+            bookingOrder.VersionGuid = Guid.NewGuid();
+
+            int result = await _orderRepo.SaveChangesToDbAsync();
+
+            return new ServiceResponse<string>(string.Empty, (InternalCode)result);
+        }
+
         public async Task<ServiceResponse<BookingResponseDTO?>> GetCheckoutUrlAsync(string orderNumber)
         {
             if (string.IsNullOrWhiteSpace(orderNumber))

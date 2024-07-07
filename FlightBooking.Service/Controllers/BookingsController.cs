@@ -84,5 +84,17 @@ namespace FlightBooking.Service.Controllers
 
             return result.FormatResponse();
         }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookingResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> UpdateBookingOrderAsync()
+        {
+            ServiceResponse<string> result = await _bookingOrderService.UpdateBookingOrderAsync();
+
+            return result.FormatResponse();
+        }
     }
 }

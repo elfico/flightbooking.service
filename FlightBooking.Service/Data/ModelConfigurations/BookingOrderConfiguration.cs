@@ -8,7 +8,9 @@ namespace FlightBooking.Service.Data.ModelConfigurations
     {
         public void Configure(EntityTypeBuilder<BookingOrder> entity)
         {
-            entity.Property(e => e.Version).IsRowVersion();
+            //entity.Property(e => e.Version).IsRowVersion();
+
+            entity.Property(e => e.VersionGuid).IsConcurrencyToken();
         }
     }
 }

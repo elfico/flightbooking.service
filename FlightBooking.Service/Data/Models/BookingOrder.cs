@@ -20,7 +20,9 @@ namespace FlightBooking.Service.Data.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public byte[] Version { get; set; } = [];
+       // public byte[] Version { get; set; } = [];
+
+        public Guid VersionGuid { get; set; }   
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();

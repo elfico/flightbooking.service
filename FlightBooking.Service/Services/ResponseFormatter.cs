@@ -41,6 +41,21 @@ namespace FlightBooking.Service.Services
 
                     return response;
 
+                case InternalCode.ConcurrencyError:
+                    problemDetails = new ProblemDetails
+                    {
+                        Status = 500,
+                        Title = ServiceErrorMessages.ConcurrencyError,
+                        Detail = $"Concurrency conflict occured. Please retry transaction. {serviceResponse.Message}",
+                        Type = "https://tools.ietf.org/html/rfc7231#section-6.6"
+                    };
+                    response = new ObjectResult(problemDetails)
+                    {
+                        StatusCode = 500
+                    };
+
+                    return response;
+
                 case InternalCode.Success:
 
                     if (serviceResponse.Data != null)

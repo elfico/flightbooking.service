@@ -124,7 +124,8 @@ namespace FlightBooking.Service
 
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseErrorHandlingMiddleware();
+                //app.UseDeveloperExceptionPage();
                 //app.UseDatabaseErrorPage();
             }
             else

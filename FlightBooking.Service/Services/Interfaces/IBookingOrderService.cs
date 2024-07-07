@@ -17,5 +17,7 @@ namespace FlightBooking.Service.Services.Interfaces
         /// <param name="orderNumber"></param>
         /// <returns>Returns an object containing payment reference and order number</returns>
         Task<ServiceResponse<BookingResponseDTO?>> GetCheckoutUrlAsync(string orderNumber);
+
+        Task<ServiceResponse<string>> UpdateBookingOrderAsync();
     }
 }
