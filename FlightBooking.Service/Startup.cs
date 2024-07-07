@@ -46,13 +46,13 @@ namespace FlightBooking.Service
                 //options.UseLoggerFactory(_myLoggerFactory).EnableSensitiveDataLogging(); //DEV: ENABLE TO SEE SQL Queries
 
                 //To Use Sql Server
-                //options.UseSqlServer(Configuration.GetConnectionString("FlightBookingServiceDb"));
+                options.UseSqlServer(Configuration.GetConnectionString("FlightBookingServiceDb"));
 
                 //To Use MySql
-                options.UseMySql(mysqlConnectionString, mySqlServerVersion, opt => opt.EnableRetryOnFailure())
-                    .LogTo(Console.WriteLine, LogLevel.Warning)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors();
+                //options.UseMySql(mysqlConnectionString, mySqlServerVersion, opt => opt.EnableRetryOnFailure())
+                //    .LogTo(Console.WriteLine, LogLevel.Warning)
+                //    .EnableSensitiveDataLogging()
+                //    .EnableDetailedErrors();
             });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
