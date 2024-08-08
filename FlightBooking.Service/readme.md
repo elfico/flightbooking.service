@@ -381,5 +381,71 @@ https://learn.microsoft.com/en-us/ef/core/modeling/relationships
 https://learn.microsoft.com/en-us/ef/ef6/fundamentals/working-with-dbcontext
 
 
+OPEN TELEMETRY SUPPORT;
+https://opentelemetry.io/docs/languages/net/
+https://opentelemetry.io/docs/zero-code/net/nuget-packages/
 
+Configure OTEL based on this docs: https://opentelemetry.io/docs/languages/net/getting-started/
 
+Exporter: https://opentelemetry.io/docs/languages/net/exporters/
+
+To use .NET Aspire dashboard, we must use the add the OTLP exporter
+
+We use .NET Aspire StandAlone Dashboard to receive events
+the .NET Aspire StandAlone Dashboard is an OTLP Exporter and can be installed via Docker.
+https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone
+
+Steps:
+Create Project:
+
+Add following nugets ->
+```
+<PackageReference Include="OpenTelemetry.AutoInstrumentation" Version="1.7.0" /> 
+<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.9.0" />
+<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+```
+
+We have both Console and OTLP (OpenTelemetryProtocol) exporters
+
+In Program.cs, add OTEL Trace and Metric
+
+```
+ services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("Flight Service"))
+    .WithTracing(trace =>
+        trace.AddAspNetCoreInstrumentation()
+        .AddOtlpExporter()
+        //.AddConsoleExporter()
+        )
+    .WithMetrics(metric =>
+        metric.AddAspNetCoreInstrumentation()
+        .AddOtlpExporter()
+        .//AddConsoleExporter()
+        );
+```
+
+Configure logging to:
+
+```
+.ConfigureLogging(logging =>
+    {
+        //logging.AddConsole();
+        logging.AddOpenTelemetry(opt =>
+        {
+            opt.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService("Flight Service"));
+        });
+        //logging.ClearProviders();
+        logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+    });
+```
+
+run the Aspire Dashboard in Docker
+
+> docker run --rm -it -p 18888:18888 -p 4317:18889 -d --name aspire-dashboard mcr.microsoft.com/dotnet/aspire-dashboard:8.0.0
+
+When using `AddOtlpExporter` the default URL is sends data to is http://localhost:4317 which is exposed by default by Aspire Dashboard
+
+Browse the url for the dashboard to view logs, metrics and traces

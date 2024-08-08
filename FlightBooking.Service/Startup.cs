@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Text;
 
 namespace FlightBooking.Service
@@ -54,6 +57,21 @@ namespace FlightBooking.Service
                 //    .EnableSensitiveDataLogging()
                 //    .EnableDetailedErrors();
             });
+
+            //Add OTel Config
+
+            services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService("Flight Service"))
+                .WithTracing(trace =>
+                    trace.AddAspNetCoreInstrumentation()
+                    .AddOtlpExporter()
+                    //.AddConsoleExporter()
+                    )
+                .WithMetrics(metric =>
+                    metric.AddAspNetCoreInstrumentation()
+                    .AddOtlpExporter()
+                    .AddConsoleExporter()
+                    );
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

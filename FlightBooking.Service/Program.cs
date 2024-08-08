@@ -1,6 +1,7 @@
 using FlightBooking.Service.Data;
 using NLog;
 using NLog.Web;
+using OpenTelemetry.Resources;
 
 namespace FlightBooking.Service
 {
@@ -54,10 +55,16 @@ namespace FlightBooking.Service
                 })
                 .ConfigureLogging(logging =>
                 {
-                    logging.ClearProviders();
+                    //logging.AddConsole();
+                    logging.AddOpenTelemetry(opt =>
+                    {
+                        opt.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                            .AddService("Flight Service"));
+                    });
+                    //logging.ClearProviders();
                     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
-                })
-                .UseNLog();  // NLog: Setup NLog for Dependency injection
+                });
+            //.UseNLog();  // NLog: Setup NLog for Dependency injection
         }
     }
 }
