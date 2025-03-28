@@ -56,7 +56,7 @@ namespace FlightBooking.Service.Controllers
             }
 
             //Since this is the only event we are handling.
-            if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+            if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
             {
                 var response = await _stripeService.ProcessPayment(stripeEvent);
 
